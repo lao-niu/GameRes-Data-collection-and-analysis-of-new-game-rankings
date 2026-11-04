@@ -1,0 +1,9 @@
+{
+  "cookie": "",
+  "token": "",
+  "token_header": "Authorization",
+  "require_auth": false,
+  "timeout": 25,
+  "sleep_seconds": 1.5,
+  "retries": 4
+}
