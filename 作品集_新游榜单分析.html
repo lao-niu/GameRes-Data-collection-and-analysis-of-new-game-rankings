@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>新游榜单观察与运营机会分析 · 游戏运营实习作品集</title>
+<style>
+:root{
+  --primary:#0F4C5C; --primary2:#2E6B78; --soft:#E8F0F2;
+  --ink:#1F2933; --muted:#6B7780; --line:#DDE4E7; --paper:#FFFFFF;
+  --bg:#EEF1F3; --gray:#9AA6AC; --gray2:#C9D2D6;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:var(--bg); color:var(--ink);
+  font-family:"PingFang SC","Microsoft YaHei","Noto Sans CJK SC","Source Han Sans SC",sans-serif;
+  font-size:11.5px; line-height:1.68; -webkit-print-color-adjust:exact; print-color-adjust:exact;
+}
+.page{
+  width:210mm; min-height:297mm; background:var(--paper); margin:9mm auto;
+  padding:15mm 16mm 13mm; position:relative; box-shadow:0 2px 14px rgba(15,76,92,.10);
+  page-break-after:always; overflow:hidden;
+}
+.page:last-child{page-break-after:auto}
+.page-head{display:flex;justify-content:space-between;align-items:center;font-size:9px;letter-spacing:.08em;color:var(--muted);border-bottom:1px solid var(--line);padding-bottom:6px;margin-bottom:10mm}
+.page-foot{position:absolute;left:16mm;right:16mm;bottom:8mm;display:flex;justify-content:space-between;font-size:8.5px;color:var(--gray);border-top:1px solid var(--line);padding-top:5px}
+.kicker{font-size:9px;letter-spacing:.16em;color:var(--primary);font-weight:700;text-transform:uppercase;margin-bottom:2mm}
+h2{font-size:22px;line-height:1.25;margin:0 0 2.5mm;font-weight:700;letter-spacing:-.01em}
+h3{font-size:13px;margin:0;font-weight:700}
+.lead{font-size:11.5px;color:#3E4C55;margin:0 0 5mm;max-width:170mm}
+.muted{color:var(--muted)}
+.small{font-size:9.5px;line-height:1.55}
+.tiny{font-size:8.6px;line-height:1.5;color:var(--muted)}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:4mm}
+.panel{border:1px solid var(--line);border-radius:8px;padding:3.5mm 4mm;background:#FCFDFD}
+.panel-title{font-size:10px;font-weight:700;color:var(--primary);letter-spacing:.04em;margin-bottom:1.6mm;display:flex;align-items:center;gap:1.5mm}
+.panel-title:before{content:"";width:3px;height:11px;background:var(--primary);border-radius:1px;display:inline-block}
+ul.tight{margin:0;padding-left:4.2mm}
+ul.tight li{margin:0 0 1.1mm;padding-left:.4mm}
+.kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:2.5mm;margin:5mm 0}
+.kpi{border:1px solid var(--line);border-radius:8px;padding:3.2mm 3.5mm;background:#FCFDFD}
+.kpi .v{font-size:20px;font-weight:700;color:var(--primary);line-height:1.1;letter-spacing:-.02em}
+.kpi .l{font-size:9.3px;color:var(--muted);margin-top:1mm}
+.kpi .s{font-size:8.4px;color:var(--gray);margin-top:.5mm}
+.chart-card{border:1px solid var(--line);border-radius:8px;padding:3.6mm 4mm 3.2mm;background:#FCFDFD;margin-bottom:3.6mm}
+.chart-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:1.2mm}
+.chart-title{font-size:11.5px;font-weight:700}
+.chart-note{font-size:8.6px;color:var(--gray)}
+svg.chart{display:block;width:100%;height:auto;margin:0}
+svg text{font-family:inherit}
+.insight{background:var(--soft);border-left:3px solid var(--primary);padding:2.2mm 3mm;border-radius:0 5px 5px 0;font-size:10.2px;color:#243B40;margin-top:1.5mm}
+.insight b{color:var(--primary)}
+.summary-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:3mm;margin-top:2mm}
+.summary-strip .cell{border-top:2px solid var(--primary);padding-top:2.2mm}
+.summary-strip .num{font-size:17px;font-weight:700;color:var(--primary);line-height:1.1}
+.summary-strip .txt{font-size:8.9px;color:var(--muted);margin-top:.8mm}
+.table-wrap{border:1px solid var(--line);border-radius:8px;overflow:hidden}
+table{width:100%;border-collapse:collapse;font-size:8.2px}
+th{background:var(--primary);color:#fff;font-weight:600;text-align:left;padding:1.8mm 1.5mm;font-size:7.8px;letter-spacing:.02em}
+td{padding:1.35mm 1.5mm;border-bottom:1px solid #EDF1F2;vertical-align:middle}
+tr:nth-child(even) td{background:#FAFCFC}
+tr:last-child td{border-bottom:none}
+td.num,th.num{text-align:center}
+td.rank{font-weight:700;color:var(--primary);text-align:center;width:8mm}
+td.game{font-weight:600}
+.top30-table{table-layout:fixed;font-size:7.9px}
+.top30-table th{padding:1.45mm 1.3mm;font-size:7.4px}
+.top30-table td{padding:.95mm 1.3mm;line-height:1.42}
+.top30-table td.dev,.top30-table td.pub{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.top30-table td.game{white-space:normal;line-height:1.4}
+.tag{display:inline-block;font-size:7.2px;padding:.2mm 1.4mm;border-radius:10px;background:var(--soft);color:var(--primary);white-space:nowrap}
+.tag.gray{background:#F0F3F4;color:#5C6B72}
+.case-hero{display:grid;grid-template-columns:1.35fr .65fr;gap:4mm;align-items:stretch;margin-bottom:4mm}
+.case-title{font-size:21px;font-weight:700;line-height:1.2;margin:0 0 1mm}
+.case-sub{font-size:10px;color:var(--muted)}
+.case-score{display:grid;grid-template-columns:1fr 1fr;gap:2mm}
+.mini{border:1px solid var(--line);border-radius:7px;padding:2.4mm 2.8mm;background:#FCFDFD}
+.mini .v{font-size:15px;font-weight:700;color:var(--primary);line-height:1.15}
+.mini .l{font-size:8.3px;color:var(--muted);margin-top:.4mm}
+.case-grid{display:grid;grid-template-columns:1fr 1fr;gap:3.5mm}
+.case-block{border:1px solid var(--line);border-radius:8px;padding:3.4mm 3.8mm;background:#FCFDFD}
+.case-block h3{font-size:11px;color:var(--primary);margin-bottom:1.4mm}
+.case-block ul{margin:0;padding-left:4mm}
+.case-block li{margin-bottom:1.1mm;font-size:9.8px;line-height:1.55}
+.case-block.full{grid-column:1 / -1}
+.case-note{border-top:1px dashed var(--line);margin-top:2.4mm;padding-top:2mm;font-size:8.5px;color:var(--muted)}
+.platform-table{font-size:8.5px}
+.platform-table th{background:#EDF2F3;color:var(--primary);padding:1.5mm 1.6mm}
+.platform-table td{padding:1.4mm 1.6mm}
+.conclusion{display:grid;grid-template-columns:9mm 1fr 44mm;gap:2.5mm;border-top:1px solid var(--line);padding:3mm 0}
+.conclusion .n{font-size:17px;font-weight:700;color:var(--primary);line-height:1}
+.conclusion .t{font-size:10.5px;font-weight:700;margin-bottom:.6mm}
+.conclusion .d{font-size:9.4px;color:#4B5A62;line-height:1.55}
+.conclusion .src{font-size:8.4px;color:var(--muted);text-align:right;line-height:1.45}
+.tool-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:4mm}
+.limit-list{columns:2;column-gap:5mm}
+.limit-list li{break-inside:avoid;margin-bottom:1.2mm}
+.cover{padding:0;background:var(--paper)}
+.cover-top{background:var(--primary);color:#fff;padding:13mm 16mm 9mm;position:relative;overflow:hidden}
+.cover-top:after{content:"";position:absolute;right:-30mm;top:-40mm;width:110mm;height:110mm;border:1px solid rgba(255,255,255,.22);border-radius:50%}
+.cover-brand{font-size:9px;letter-spacing:.2em;color:#C9DDE2;font-weight:600}
+.cover-main{padding:16mm 16mm 0}
+.eyebrow{font-size:9.5px;letter-spacing:.12em;color:var(--primary);font-weight:700;margin-bottom:4mm}
+h1{font-size:34px;line-height:1.18;margin:0 0 4mm;font-weight:700;letter-spacing:-.02em}
+.cover-sub{font-size:12.5px;color:#4B5A62;line-height:1.6;max-width:150mm}
+.cover-line{width:28mm;height:3px;background:var(--primary);margin:7mm 0 5mm}
+.cover-abstract{font-size:10.5px;color:#3E4C55;max-width:158mm;border-left:3px solid var(--primary);padding-left:3.5mm;line-height:1.7}
+.meta-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:2.5mm;margin:9mm 16mm 0}
+.ability-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:3mm;margin:6mm 16mm 0}
+.ability{border:1px solid var(--line);border-radius:8px;padding:3.4mm 3.8mm;background:#FCFDFD}
+.ability .k{font-size:9px;letter-spacing:.08em;color:var(--primary);font-weight:700}
+.ability .h{font-size:11px;font-weight:700;margin:1mm 0 .8mm}
+.ability .b{font-size:8.7px;color:var(--muted);line-height:1.55}
+.cover-foot{position:absolute;left:16mm;right:16mm;bottom:10mm;font-size:8.4px;color:var(--muted);border-top:1px solid var(--line);padding-top:2mm;display:flex;justify-content:space-between}
+.cover-index{margin:8mm 16mm 0;border-top:1px solid var(--line);padding-top:3.5mm}
+.idx-title{font-size:9px;letter-spacing:.12em;color:var(--primary);font-weight:700;margin-bottom:2mm}
+.idx-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:2mm 4mm}
+.idx{font-size:8.5px;color:var(--muted)}
+.idx b{color:var(--primary);margin-right:1mm;font-weight:700}
+@media print{
+  body{background:#fff}
+  .page{margin:0;box-shadow:none;width:210mm;min-height:297mm}
+  .no-print{display:none}
+}
+@page{size:A4;margin:0}
+</style>
+</head>
+<body>
+
+<div class="page cover">
+  <div class="cover-top">
+    <div class="cover-brand">GAMERES NEW GAMES · PORTFOLIO DRAFT</div>
+  </div>
+  <div class="cover-main">
+    <div class="eyebrow">游戏运营实习作品集 / 手游发行方向</div>
+    <h1>新游榜单观察<br>与运营机会分析</h1>
+    <div class="cover-sub">从 537 款国内新游的榜单数据出发，拆解品类供给、厂商结构、开测档期与头部产品，回答“立项看什么、竞品怎么跟、发行从哪里切”。</div>
+    <div class="cover-line"></div>
+    <div class="cover-abstract">一句话结论：供给高度分散，模拟/休闲赛道同质化明显；10 月是密集上线窗口；发行侧情报与测试期反馈，是比“看排名”更值得投入的运营抓手。</div>
+    <div class="meta-grid">
+      <div class="kpi"><div class="v">537</div><div class="l">榜单样本</div><div class="s">国内新游 · 近 30 天</div></div>
+      <div class="kpi"><div class="v">30</div><div class="l">头部详情样本</div><div class="s">排名前 30 · 单款 txt</div></div>
+      <div class="kpi"><div class="v">81</div><div class="l">开测记录</div><div class="s">30 款游戏 · 2020–2026</div></div>
+      <div class="kpi"><div class="v" style="font-size:16px;padding-top:2px">2026.11.02</div><div class="l">数据抓取时间</div><div class="s">可复现 · 接口留存</div></div>
+    </div>
+    <div class="ability-grid">
+      <div class="ability"><div class="k">DATA</div><div class="h">数据能力</div><div class="b">接口分页抓取、字段清洗、评分/评价数归一、可视化表达。</div></div>
+      <div class="ability"><div class="k">INSIGHT</div><div class="h">行业敏感度</div><div class="b">从品类、厂商、档期读出供给结构与竞争窗口。</div></div>
+      <div class="ability"><div class="k">OPERATION</div><div class="h">运营视角</div><div class="b">把榜单结论转成立项、竞品跟踪、测试期运营动作。</div></div>
+    </div>
+    <div class="cover-index">
+      <div class="idx-title">报告地图 / CONTENTS</div>
+      <div class="idx-grid">
+        <div class="idx"><b>01</b>数据说明与概览 · P02</div>
+        <div class="idx"><b>02</b>评价与标签 · P03</div>
+        <div class="idx"><b>03</b>品类与厂商 · P04</div>
+        <div class="idx"><b>04</b>开测节奏 · P05</div>
+        <div class="idx"><b>05</b>前 30 速览 · P06</div>
+        <div class="idx"><b>06</b>案例拆解 · P07–08</div>
+        <div class="idx"><b>07</b>结论与建议 · P09</div>
+        <div class="idx"><b>08</b>数据与工具 · P09</div>
+      </div>
+    </div>
+  </div>
+  <div class="cover-foot"><span>作品集草稿 · 数据与口径见正文</span><span>01 / 09</span></div>
+</div>
+
+
+<div class="page"><div class="page-head"><span>游戏运营实习作品集 · 新游榜单观察</span><span>gameres 新游榜 · 2026-11-02</span></div>
+  <div class="kicker">01 / DATA SCOPE &amp; OVERVIEW</div>
+  <h2>先看口径，再看榜单</h2>
+  <p class="lead">这份报告只回答四个问题：供给长什么样、谁在做、什么时候上、头部产品做对了什么。所有数字来自同一次采集，未做估算。</p>
+  <div class="two-col">
+    <div class="panel">
+      <div class="panel-title">采集范围</div>
+      <ul class="tight small">
+        <li>榜单：gameres 游戏中心「新游榜」，<b>date_range=30、type_range=2（国内游戏）</b>。</li>
+        <li>分页：参数 p 为页码、ps 为单页 50 条（实测上限），共 11 页、<b>537 条</b>，排名连续 1–537。</li>
+        <li>详情：排名前 30 逐一调详情接口，保存为 30 个 txt；开测、厂商、发行商、平台信息来自接口字段。</li>
+        <li>时间：2026-11-02 抓取；详情页来源 https://www.16p.com/&#123;gameid&#125;.html。</li>
+      </ul>
+    </div>
+    <div class="panel">
+      <div class="panel-title">字段口径与局限</div>
+      <ul class="tight small">
+        <li>榜单评分为 <b>5 分制</b>；详情评分为 <b>10 分制</b>，两者不可直接相加。0 分视为“暂无评分”，评分分布剔除 49 条 0 分。</li>
+        <li>评价数含“万”单位，已换算为数值；<b>换算值近似</b>，累计评价 253,165 为约数。</li>
+        <li>品类是按游戏标签优先匹配的<b>分析口径</b>，不是官方品类；平台/活动标签（TapTap制造、聚光灯GameJam等）已剔除。</li>
+        <li>单站、单榜单、近 30 天样本，<b>不代表全市场</b>；广告素材、买量、评论原文未采集。</li>
+      </ul>
+    </div>
+  </div>
+  <div class="kpi-row">
+    <div class="kpi"><div class="v">537</div><div class="l">榜单游戏数</div><div class="s">排名 1–537</div></div>
+    <div class="kpi"><div class="v">4.23<span style="font-size:10px;color:#6B7780"> / 5</span></div><div class="l">有效评分均值</div><div class="s">488 款有评分</div></div>
+    <div class="kpi"><div class="v">253,165</div><div class="l">累计评价数（约）</div><div class="s">中位数 37</div></div>
+    <div class="kpi"><div class="v">61.8%</div><div class="l">评价数 Top10 占比</div><div class="s">注意力高度集中</div></div>
+  </div>
+  <div class="chart-card">
+    <div class="chart-head"><span class="chart-title">排名分布：长尾很厚，中段最挤</span><span class="chart-note">n=537</span></div>
+    <svg class="chart" viewBox="0 0 680 158" xmlns="http://www.w3.org/2000/svg"><line x1="44" y1="124.0" x2="666" y2="124.0" stroke="#E3E8EA" stroke-width="1" stroke-dasharray="2 3"/><text x="36" y="128.0" text-anchor="end" font-size="9.5" fill="#9AA6AC">0</text><line x1="44" y1="73.0" x2="666" y2="73.0" stroke="#E3E8EA" stroke-width="1" stroke-dasharray="2 3"/><text x="36" y="77.0" text-anchor="end" font-size="9.5" fill="#9AA6AC">75</text><line x1="44" y1="22.0" x2="666" y2="22.0" stroke="#E3E8EA" stroke-width="1" stroke-dasharray="2 3"/><text x="36" y="26.0" text-anchor="end" font-size="9.5" fill="#9AA6AC">150</text><rect x="58.8" y="117.2" width="48.2" height="6.8" rx="2" fill="#0F4C5C"/><text x="82.9" y="112.2" text-anchor="middle" font-size="10" font-weight="600" fill="#1F2933">10</text><text x="82.9" y="140" text-anchor="middle" font-size="9.5" fill="#6B7780">1–10 名</text><rect x="136.5" y="110.4" width="48.2" height="13.6" rx="2" fill="#0F4C5C"/><text x="160.6" y="105.4" text-anchor="middle" font-size="10" font-weight="600" fill="#1F2933">20</text><text x="160.6" y="140" text-anchor="middle" font-size="9.5" fill="#6B7780">11–30 名</text><rect x="214.3" y="110.4" width="48.2" height="13.6" rx="2" fill="#0F4C5C"/><text x="238.4" y="105.4" text-anchor="middle" font-size="10" font-weight="600" fill="#1F2933">20</text><text x="238.4" y="140" text-anchor="middle" font-size="9.5" fill="#6B7780">31–50 名</text><rect x="292.0" y="90.0" width="48.2" height="34.0" rx="2" fill="#0F4C5C"/><text x="316.1" y="85.0" text-anchor="middle" font-size="10" font-weight="600" fill="#1F2933">50</text><text x="316.1" y="140" text-anchor="middle" font-size="9.5" fill="#6B7780">51–100 名</text><rect x="369.8" y="56.0" width="48.2" height="68.0" rx="2" fill="#0F4C5C"/><text x="393.9" y="51.0" text-anchor="middle" font-size="10" font-weight="600" fill="#1F2933">100</text><text x="393.9" y="140" text-anchor="middle" font-size="9.5" fill="#6B7780">101–200 名</text><rect x="447.5" y="56.0" width="48.2" height="68.0" rx="2" fill="#0F4C5C"/><text x="471.6" y="51.0" text-anchor="middle" font-size="10" font-weight="600" fill="#1F2933">100</text><text x="471.6" y="140" text-anchor="middle" font-size="9.5" fill="#6B7780">201–300 名</text><rect x="525.3" y="56.0" width="48.2" height="68.0" rx="2" fill="#0F4C5C"/><text x="549.4" y="51.0" text-anchor="middle" font-size="10" font-weight="600" fill="#1F2933">100</text><text x="549.4" y="140" text-anchor="middle" font-size="9.5" fill="#6B7780">301–400 名</text><rect x="603.0" y="30.8" width="48.2" height="93.2" rx="2" fill="#0F4C5C"/><text x="627.1" y="25.8" text-anchor="middle" font-size="10" font-weight="600" fill="#1F2933">137</text><text x="627.1" y="140" text-anchor="middle" font-size="9.5" fill="#6B7780">401–537 名</text></svg>
+    <div class="insight"><b>这说明什么：</b>401–537 名仍有 137 款（25.5%），新游供给充足；101–400 名共 300 款（55.9%），是曝光竞争最拥挤的区间。长尾不是“没人看”，而是<b>低成本测试与分层运营的池子</b>。</div>
+  </div>
+  <div class="chart-card">
+    <div class="chart-head"><span class="chart-title">评分分布：整体偏高，4 分以上占 85.7%</span><span class="chart-note">有效评分 n=488 · 0 分已剔除</span></div>
+    <svg class="chart" viewBox="0 0 680 148" xmlns="http://www.w3.org/2000/svg"><line x1="44" y1="114.0" x2="666" y2="114.0" stroke="#E3E8EA" stroke-width="1" stroke-dasharray="2 3"/><text x="36" y="118.0" text-anchor="end" font-size="9.5" fill="#9AA6AC">0</text><line x1="44" y1="68.0" x2="666" y2="68.0" stroke="#E3E8EA" stroke-width="1" stroke-dasharray="2 3"/><text x="36" y="72.0" text-anchor="end" font-size="9.5" fill="#9AA6AC">100</text><line x1="44" y1="22.0" x2="666" y2="22.0" stroke="#E3E8EA" stroke-width="1" stroke-dasharray="2 3"/><text x="36" y="26.0" text-anchor="end" font-size="9.5" fill="#9AA6AC">200</text><rect x="63.7" y="112.2" width="64.3" height="1.8" rx="2" fill="#0F4C5C"/><text x="95.8" y="107.2" text-anchor="middle" font-size="10" font-weight="600" fill="#1F2933">4</text><text x="95.8" y="130" text-anchor="middle" font-size="9.5" fill="#6B7780">2.5 分</text><rect x="167.4" y="106.6" width="64.3" height="7.4" rx="2" fill="#0F4C5C"/><text x="199.5" y="101.6" text-anchor="middle" font-size="10" font-weight="600" fill="#1F2933">16</text><text x="199.5" y="130" text-anchor="middle" font-size="9.5" fill="#6B7780">3.0 分</text><rect x="271.0" y="91.0" width="64.3" height="23.0" rx="2" fill="#0F4C5C"/><text x="303.2" y="86.0" text-anchor="middle" font-size="10" font-weight="600" fill="#1F2933">50</text><text x="303.2" y="130" text-anchor="middle" font-size="9.5" fill="#6B7780">3.5 分</text><rect x="374.7" y="35.3" width="64.3" height="78.7" rx="2" fill="#0F4C5C"/><text x="406.8" y="30.3" text-anchor="middle" font-size="10" font-weight="600" fill="#1F2933">171</text><text x="406.8" y="130" text-anchor="middle" font-size="9.5" fill="#6B7780">4.0 分</text><rect x="478.4" y="30.7" width="64.3" height="83.3" rx="2" fill="#0F4C5C"/><text x="510.5" y="25.7" text-anchor="middle" font-size="10" font-weight="600" fill="#1F2933">181</text><text x="510.5" y="130" text-anchor="middle" font-size="9.5" fill="#6B7780">4.5 分</text><rect x="582.0" y="83.6" width="64.3" height="30.4" rx="2" fill="#0F4C5C"/><text x="614.2" y="78.6" text-anchor="middle" font-size="10" font-weight="600" fill="#1F2933">66</text><text x="614.2" y="130" text-anchor="middle" font-size="9.5" fill="#6B7780">5.0 分</text></svg>
+    <div class="insight"><b>这说明什么：</b>4.0–5.0 分共 418 款（85.7%），4.5 分及以上 247 款（50.6%）。评分高并不等于热度高，<b>必须和评价数、平台声量交叉看</b>；5.0 分仅 66 款（13.5%），满分仍是稀缺信号。</div>
+  </div>
+  <div class="page-foot"><span>数据来源：gameres 新游榜（16p.com） · 537 条榜单 / 30 条详情</span><span>02 / 09</span></div>
+</div>
+
+
+<div class="page"><div class="page-head"><span>游戏运营实习作品集 · 新游榜单观察</span><span>gameres 新游榜 · 2026-11-02</span></div>
+  <div class="kicker">02 / REVIEWS &amp; TAGS</div>
+  <h2>评价看热度，标签看供给</h2>
+  <p class="lead">排名是结果，评价数是声量，标签是供给结构。把三者放在一起，才能判断“这个赛道是真热，还是只是新”。</p>
+  <div class="chart-card">
+    <div class="chart-head"><span class="chart-title">评价数 Top10：头部拿走六成声量</span><span class="chart-note">“万”已换算，数值为约数</span></div>
+    <svg class="chart" viewBox="0 0 680 242" xmlns="http://www.w3.org/2000/svg"><line x1="170.0" y1="10" x2="170.0" y2="232" stroke="#E3E8EA" stroke-width="1" stroke-dasharray="2 3"/><line x1="277.0" y1="10" x2="277.0" y2="232" stroke="#E3E8EA" stroke-width="1" stroke-dasharray="2 3"/><line x1="384.0" y1="10" x2="384.0" y2="232" stroke="#E3E8EA" stroke-width="1" stroke-dasharray="2 3"/><line x1="491.0" y1="10" x2="491.0" y2="232" stroke="#E3E8EA" stroke-width="1" stroke-dasharray="2 3"/><line x1="598.0" y1="10" x2="598.0" y2="232" stroke="#E3E8EA" stroke-width="1" stroke-dasharray="2 3"/><rect x="170" y="10" width="428.0" height="15" rx="2" fill="#0F4C5C"/><text x="161" y="21.5" text-anchor="end" font-size="11" fill="#4B5563">影之刃零</text><text x="605.0" y="21.5" font-size="10.5" font-weight="600" fill="#1F2933">39,000</text><rect x="170" y="33" width="285.3" height="15" rx="2" fill="#0F4C5C"/><text x="161" y="44.5" text-anchor="end" font-size="11" fill="#4B5563">地城狩猎</text><text x="462.3333333333333" y="44.5" font-size="10.5" font-weight="600" fill="#1F2933">26,000</text><rect x="170" y="56" width="219.5" height="15" rx="2" fill="#0F4C5C"/><text x="161" y="67.5" text-anchor="end" font-size="11" fill="#4B5563">俱乐大玩家</text><text x="396.48717948717945" y="67.5" font-size="10.5" font-weight="600" fill="#1F2933">20,000</text><rect x="170" y="79" width="131.7" height="15" rx="2" fill="#0F4C5C"/><text x="161" y="90.5" text-anchor="end" font-size="11" fill="#4B5563">饥困荒野</text><text x="308.69230769230774" y="90.5" font-size="10.5" font-weight="600" fill="#1F2933">12,000</text><rect x="170" y="102" width="131.7" height="15" rx="2" fill="#0F4C5C"/><text x="161" y="113.5" text-anchor="end" font-size="11" fill="#4B5563">篮球少女:飞跃巅峰</text><text x="308.69230769230774" y="113.5" font-size="10.5" font-weight="600" fill="#1F2933">12,000</text><rect x="170" y="125" width="131.7" height="15" rx="2" fill="#0F4C5C"/><text x="161" y="136.5" text-anchor="end" font-size="11" fill="#4B5563">伍六七:暗影交锋</text><text x="308.69230769230774" y="136.5" font-size="10.5" font-weight="600" fill="#1F2933">12,000</text><rect x="170" y="148" width="120.7" height="15" rx="2" fill="#0F4C5C"/><text x="161" y="159.5" text-anchor="end" font-size="11" fill="#4B5563">绿梦:时空之声</text><text x="297.71794871794873" y="159.5" font-size="10.5" font-weight="600" fill="#1F2933">11,000</text><rect x="170" y="171" width="105.2" height="15" rx="2" fill="#0F4C5C"/><text x="161" y="182.5" text-anchor="end" font-size="11" fill="#4B5563">星途天城</text><text x="282.22215384615384" y="182.5" font-size="10.5" font-weight="600" fill="#1F2933">9,588</text><rect x="170" y="194" width="92.6" height="15" rx="2" fill="#0F4C5C"/><text x="161" y="205.5" text-anchor="end" font-size="11" fill="#4B5563">问剑长生</text><text x="269.5577435897436" y="205.5" font-size="10.5" font-weight="600" fill="#1F2933">8,434</text><rect x="170" y="217" width="70.4" height="15" rx="2" fill="#0F4C5C"/><text x="161" y="228.5" text-anchor="end" font-size="11" fill="#4B5563">崩坏：因缘精灵</text><text x="247.4334358974359" y="228.5" font-size="10.5" font-weight="600" fill="#1F2933">6,418</text></svg>
+    <div class="insight"><b>这说明什么：</b>Top10 合计 156,440 条评价，占全榜 61.8%；《影之刃零》39,000 条居首。头部产品的口碑运营价值极高，腰尾部更应看<b>评价增速</b>而不是绝对量。</div>
+  </div>
+  <div class="chart-card">
+    <div class="chart-head"><span class="chart-title">标签词频 Top10：模拟与休闲是最拥挤的供给带</span><span class="chart-note">已剔除平台/活动标签 · 可多选</span></div>
+    <svg class="chart" viewBox="0 0 680 242" xmlns="http://www.w3.org/2000/svg"><line x1="150.0" y1="10" x2="150.0" y2="232" stroke="#E3E8EA" stroke-width="1" stroke-dasharray="2 3"/><line x1="262.0" y1="10" x2="262.0" y2="232" stroke="#E3E8EA" stroke-width="1" stroke-dasharray="2 3"/><line x1="374.0" y1="10" x2="374.0" y2="232" stroke="#E3E8EA" stroke-width="1" stroke-dasharray="2 3"/><line x1="486.0" y1="10" x2="486.0" y2="232" stroke="#E3E8EA" stroke-width="1" stroke-dasharray="2 3"/><line x1="598.0" y1="10" x2="598.0" y2="232" stroke="#E3E8EA" stroke-width="1" stroke-dasharray="2 3"/><rect x="150" y="10" width="448.0" height="15" rx="2" fill="#0F4C5C"/><text x="141" y="21.5" text-anchor="end" font-size="11" fill="#4B5563">模拟</text><text x="605.0" y="21.5" font-size="10.5" font-weight="600" fill="#1F2933">201</text><rect x="150" y="33" width="352.2" height="15" rx="2" fill="#0F4C5C"/><text x="141" y="44.5" text-anchor="end" font-size="11" fill="#4B5563">休闲</text><text x="509.1592039800995" y="44.5" font-size="10.5" font-weight="600" fill="#1F2933">158</text><rect x="150" y="56" width="202.8" height="15" rx="2" fill="#0F4C5C"/><text x="141" y="67.5" text-anchor="end" font-size="11" fill="#4B5563">策略</text><text x="359.82587064676613" y="67.5" font-size="10.5" font-weight="600" fill="#1F2933">91</text><rect x="150" y="79" width="193.9" height="15" rx="2" fill="#0F4C5C"/><text x="141" y="90.5" text-anchor="end" font-size="11" fill="#4B5563">角色扮演</text><text x="350.910447761194" y="90.5" font-size="10.5" font-weight="600" fill="#1F2933">87</text><rect x="150" y="102" width="115.9" height="15" rx="2" fill="#0F4C5C"/><text x="141" y="113.5" text-anchor="end" font-size="11" fill="#4B5563">放置</text><text x="272.9004975124378" y="113.5" font-size="10.5" font-weight="600" fill="#1F2933">52</text><rect x="150" y="125" width="100.3" height="15" rx="2" fill="#0F4C5C"/><text x="141" y="136.5" text-anchor="end" font-size="11" fill="#4B5563">卡牌</text><text x="257.2985074626866" y="136.5" font-size="10.5" font-weight="600" fill="#1F2933">45</text><rect x="150" y="148" width="86.9" height="15" rx="2" fill="#0F4C5C"/><text x="141" y="159.5" text-anchor="end" font-size="11" fill="#4B5563">冒险</text><text x="243.92537313432837" y="159.5" font-size="10.5" font-weight="600" fill="#1F2933">39</text><rect x="150" y="171" width="78.0" height="15" rx="2" fill="#0F4C5C"/><text x="141" y="182.5" text-anchor="end" font-size="11" fill="#4B5563">养成</text><text x="235.00995024875624" y="182.5" font-size="10.5" font-weight="600" fill="#1F2933">35</text><rect x="150" y="194" width="75.8" height="15" rx="2" fill="#0F4C5C"/><text x="141" y="205.5" text-anchor="end" font-size="11" fill="#4B5563">动作</text><text x="232.7810945273632" y="205.5" font-size="10.5" font-weight="600" fill="#1F2933">34</text><rect x="150" y="217" width="73.6" height="15" rx="2" fill="#0F4C5C"/><text x="141" y="228.5" text-anchor="end" font-size="11" fill="#4B5563">模拟经营</text><text x="230.55223880597015" y="228.5" font-size="10.5" font-weight="600" fill="#1F2933">33</text></svg>
+    <div class="insight"><b>这说明什么：</b>“模拟”出现 201 次（覆盖 37.4% 的榜单游戏），“休闲”158 次（29.4%）；策略、角色扮演分别为 91、87 次。供给集中在<b>低门槛、泛用户</b>赛道，题材与玩法组合的差异化比“再做一个模拟”更重要。</div>
+  </div>
+  <div class="summary-strip">
+    <div class="cell"><div class="num">85.7%</div><div class="txt">有效评分中 4.0 分及以上占比</div></div>
+    <div class="cell"><div class="num">50.6%</div><div class="txt">有效评分中 4.5 分及以上占比</div></div>
+    <div class="cell"><div class="num">11.2%</div><div class="txt">“其他”细分品类合计占比（60 款）</div></div>
+  </div>
+  <div class="insight"><b>运营视角：</b>评价数 Top10 中既有上线产品，也有测试期产品。做竞品跟踪时，应把“已上线口碑”与“测试期预约/评价”分开建模，避免用同一套基准比较。</div>
+  <div class="page-foot"><span>数据来源：gameres 新游榜（16p.com） · 537 条榜单 / 30 条详情</span><span>03 / 09</span></div>
+</div>
+
+
+<div class="page"><div class="page-head"><span>游戏运营实习作品集 · 新游榜单观察</span><span>gameres 新游榜 · 2026-11-02</span></div>
+  <div class="kicker">03 / CATEGORY &amp; PUBLISHER STRUCTURE</div>
+  <h2>品类拥挤，厂商分散</h2>
+  <p class="lead">品类结构决定立项难度，厂商结构决定发行合作空间。两个维度都指向同一个判断：<b>机会不在“再做一个大类”，而在细分组合与中长尾团队</b>。</p>
+  <div class="chart-card">
+    <div class="chart-head"><span class="chart-title">品类占比：模拟 + 休闲合计 56.0%</span><span class="chart-note">按标签优先匹配 · n=537</span></div>
+    <svg class="chart" viewBox="0 0 680 244" xmlns="http://www.w3.org/2000/svg"><line x1="110.0" y1="10" x2="110.0" y2="234" stroke="#E3E8EA" stroke-width="1" stroke-dasharray="2 3"/><line x1="232.0" y1="10" x2="232.0" y2="234" stroke="#E3E8EA" stroke-width="1" stroke-dasharray="2 3"/><line x1="354.0" y1="10" x2="354.0" y2="234" stroke="#E3E8EA" stroke-width="1" stroke-dasharray="2 3"/><line x1="476.0" y1="10" x2="476.0" y2="234" stroke="#E3E8EA" stroke-width="1" stroke-dasharray="2 3"/><line x1="598.0" y1="10" x2="598.0" y2="234" stroke="#E3E8EA" stroke-width="1" stroke-dasharray="2 3"/><rect x="110" y="10" width="488.0" height="14" rx="2" fill="#0F4C5C"/><text x="101" y="21.0" text-anchor="end" font-size="11" fill="#4B5563">模拟</text><text x="605.0" y="21.0" font-size="10.5" font-weight="600" fill="#1F2933">178</text><rect x="110" y="31" width="337.2" height="14" rx="2" fill="#0F4C5C"/><text x="101" y="42.0" text-anchor="end" font-size="11" fill="#4B5563">休闲</text><text x="454.2134831460674" y="42.0" font-size="10.5" font-weight="600" fill="#1F2933">123</text><rect x="110" y="52" width="137.1" height="14" rx="2" fill="#0F4C5C"/><text x="101" y="63.0" text-anchor="end" font-size="11" fill="#4B5563">策略</text><text x="254.07865168539325" y="63.0" font-size="10.5" font-weight="600" fill="#1F2933">50</text><rect x="110" y="73" width="134.3" height="14" rx="2" fill="#0F4C5C"/><text x="101" y="84.0" text-anchor="end" font-size="11" fill="#4B5563">角色扮演</text><text x="251.3370786516854" y="84.0" font-size="10.5" font-weight="600" fill="#1F2933">49</text><rect x="110" y="94" width="46.6" height="14" rx="2" fill="#0F4C5C"/><text x="101" y="105.0" text-anchor="end" font-size="11" fill="#4B5563">动作</text><text x="163.6067415730337" y="105.0" font-size="10.5" font-weight="600" fill="#1F2933">17</text><rect x="110" y="115" width="41.1" height="14" rx="2" fill="#0F4C5C"/><text x="101" y="126.0" text-anchor="end" font-size="11" fill="#4B5563">卡牌</text><text x="158.12359550561797" y="126.0" font-size="10.5" font-weight="600" fill="#1F2933">15</text><rect x="110" y="136" width="35.6" height="14" rx="2" fill="#0F4C5C"/><text x="101" y="147.0" text-anchor="end" font-size="11" fill="#4B5563">冒险</text><text x="152.64044943820224" y="147.0" font-size="10.5" font-weight="600" fill="#1F2933">13</text><rect x="110" y="157" width="32.9" height="14" rx="2" fill="#0F4C5C"/><text x="101" y="168.0" text-anchor="end" font-size="11" fill="#4B5563">模拟经营</text><text x="149.8988764044944" y="168.0" font-size="10.5" font-weight="600" fill="#1F2933">12</text><rect x="110" y="178" width="30.2" height="14" rx="2" fill="#0F4C5C"/><text x="101" y="189.0" text-anchor="end" font-size="11" fill="#4B5563">放置</text><text x="147.1573033707865" y="189.0" font-size="10.5" font-weight="600" fill="#1F2933">11</text><rect x="110" y="199" width="24.7" height="14" rx="2" fill="#0F4C5C"/><text x="101" y="210.0" text-anchor="end" font-size="11" fill="#4B5563">Roguelike</text><text x="141.67415730337078" y="210.0" font-size="10.5" font-weight="600" fill="#1F2933">9</text><rect x="110" y="220" width="164.5" height="14" rx="2" fill="#0F4C5C"/><text x="101" y="231.0" text-anchor="end" font-size="11" fill="#4B5563">其他</text><text x="281.4943820224719" y="231.0" font-size="10.5" font-weight="600" fill="#1F2933">60</text></svg>
+    <div class="insight"><b>这说明什么：</b>模拟 178 款（33.1%）、休闲 123 款（22.9%），前四类合计 74.5%。大类供给饱和，立项评估应优先看<b>“模拟+XX”“IP+XX”的复合题材</b>，而不是单品类。</div>
+  </div>
+  <div class="chart-card">
+    <div class="chart-head"><span class="chart-title">开发商集中度：CR5 7.6% / CR10 11.4%</span><span class="chart-note">按榜单游戏数计 · 分母 537</span></div>
+    <svg class="chart" viewBox="0 0 680 204" xmlns="http://www.w3.org/2000/svg"><line x1="178.0" y1="10" x2="178.0" y2="194" stroke="#E3E8EA" stroke-width="1" stroke-dasharray="2 3"/><line x1="283.0" y1="10" x2="283.0" y2="194" stroke="#E3E8EA" stroke-width="1" stroke-dasharray="2 3"/><line x1="388.0" y1="10" x2="388.0" y2="194" stroke="#E3E8EA" stroke-width="1" stroke-dasharray="2 3"/><line x1="493.0" y1="10" x2="493.0" y2="194" stroke="#E3E8EA" stroke-width="1" stroke-dasharray="2 3"/><line x1="598.0" y1="10" x2="598.0" y2="194" stroke="#E3E8EA" stroke-width="1" stroke-dasharray="2 3"/><rect x="178" y="10" width="420.0" height="13" rx="2" fill="#0F4C5C"/><text x="169" y="20.5" text-anchor="end" font-size="11" fill="#4B5563">断桥的工作室</text><text x="605.0" y="20.5" font-size="10.5" font-weight="600" fill="#1F2933">13</text><rect x="178" y="29" width="290.8" height="13" rx="2" fill="#0F4C5C"/><text x="169" y="39.5" text-anchor="end" font-size="11" fill="#4B5563">熠舟工作室</text><text x="475.7692307692308" y="39.5" font-size="10.5" font-weight="600" fill="#1F2933">9</text><rect x="178" y="48" width="226.2" height="13" rx="2" fill="#0F4C5C"/><text x="169" y="58.5" text-anchor="end" font-size="11" fill="#4B5563">Shanghai Epieplay</text><text x="411.15384615384613" y="58.5" font-size="10.5" font-weight="600" fill="#1F2933">7</text><rect x="178" y="67" width="226.2" height="13" rx="2" fill="#0F4C5C"/><text x="169" y="77.5" text-anchor="end" font-size="11" fill="#4B5563">wuyuxai</text><text x="411.15384615384613" y="77.5" font-size="10.5" font-weight="600" fill="#1F2933">7</text><rect x="178" y="86" width="161.5" height="13" rx="2" fill="#0F4C5C"/><text x="169" y="96.5" text-anchor="end" font-size="11" fill="#4B5563">wey的工作室</text><text x="346.53846153846155" y="96.5" font-size="10.5" font-weight="600" fill="#1F2933">5</text><rect x="178" y="105" width="129.2" height="13" rx="2" fill="#0F4C5C"/><text x="169" y="115.5" text-anchor="end" font-size="11" fill="#4B5563">时迹网络</text><text x="314.2307692307692" y="115.5" font-size="10.5" font-weight="600" fill="#1F2933">4</text><rect x="178" y="124" width="129.2" height="13" rx="2" fill="#0F4C5C"/><text x="169" y="134.5" text-anchor="end" font-size="11" fill="#4B5563">贪玩游戏</text><text x="314.2307692307692" y="134.5" font-size="10.5" font-weight="600" fill="#1F2933">4</text><rect x="178" y="143" width="129.2" height="13" rx="2" fill="#0F4C5C"/><text x="169" y="153.5" text-anchor="end" font-size="11" fill="#4B5563">柒火</text><text x="314.2307692307692" y="153.5" font-size="10.5" font-weight="600" fill="#1F2933">4</text><rect x="178" y="162" width="129.2" height="13" rx="2" fill="#0F4C5C"/><text x="169" y="172.5" text-anchor="end" font-size="11" fill="#4B5563">铁砧工作室</text><text x="314.2307692307692" y="172.5" font-size="10.5" font-weight="600" fill="#1F2933">4</text><rect x="178" y="181" width="129.2" height="13" rx="2" fill="#0F4C5C"/><text x="169" y="191.5" text-anchor="end" font-size="11" fill="#4B5563">AndreaH的工作室</text><text x="314.2307692307692" y="191.5" font-size="10.5" font-weight="600" fill="#1F2933">4</text></svg>
+    <div class="insight"><b>这说明什么：</b>榜首“断桥的工作室”仅 13 款（2.4%），Top10 合计 61 款（11.4%）。供给高度分散，<b>中小研发团队是发行/运营服务的潜在合作池</b>；发行侧的 BD 与产品筛选价值被放大。</div>
+  </div>
+  <div class="chart-card" style="margin-bottom:0">
+    <div class="chart-head"><span class="chart-title">发行商字段覆盖率：85.8% 的榜单记录没有发行商</span><span class="chart-note">n=537</span></div>
+    <svg class="chart" viewBox="0 0 680 56" xmlns="http://www.w3.org/2000/svg"><rect x="0.0" y="14" width="96.2" height="26" fill="#0F4C5C"/><text x="48.1" y="10" text-anchor="middle" font-size="9.5" fill="#0F4C5C" font-weight="600">有记录 14.2%</text><rect x="96.2" y="14" width="583.8" height="26" fill="#C9D2D6"/><text x="388.1" y="32" text-anchor="middle" font-size="10.5" fill="#FFFFFF" font-weight="600">无记录 85.8%</text><text x="0" y="52" font-size="9" fill="#6B7780">0</text><text x="680" y="52" text-anchor="end" font-size="9" fill="#6B7780">537 条榜单记录</text></svg>
+    <div class="insight"><b>这说明什么：</b>461 条记录无发行商字段，<b>不代表这些产品没有发行商</b>，而是该榜单/入库信息更偏研发侧。做发行竞品分析时，不能只看这一列，需补版号、工商、渠道与第三方情报——这本身就是一个可执行的补数动作。</div>
+  </div>
+  <div class="page-foot"><span>数据来源：gameres 新游榜（16p.com） · 537 条榜单 / 30 条详情</span><span>04 / 09</span></div>
+</div>
+
+
+<div class="page"><div class="page-head"><span>游戏运营实习作品集 · 新游榜单观察</span><span>gameres 新游榜 · 2026-11-02</span></div>
+  <div class="kicker">04 / TEST WINDOWS</div>
+  <h2>开测节奏：10 月是拥挤档期</h2>
+  <p class="lead">30 款头部产品共 81 条开测记录。按 2026 年月度看，10 月单月 36 条，是全年最高峰；按日看，10-15 单日 6 条记录。</p>
+  <div class="chart-card">
+    <div class="chart-head"><span class="chart-title">2026 年月度开测记录：10 月占全年 58.1%</span><span class="chart-note">2026 年 62 条 · 另有 19 条 2025 及以前未计入</span></div>
+    <svg class="chart" viewBox="0 0 680 190" xmlns="http://www.w3.org/2000/svg"><line x1="44" y1="156.0" x2="666" y2="156.0" stroke="#E3E8EA" stroke-width="1" stroke-dasharray="2 3"/><text x="36" y="160.0" text-anchor="end" font-size="9.5" fill="#9AA6AC">0</text><line x1="44" y1="89.0" x2="666" y2="89.0" stroke="#E3E8EA" stroke-width="1" stroke-dasharray="2 3"/><text x="36" y="93.0" text-anchor="end" font-size="9.5" fill="#9AA6AC">20</text><line x1="44" y1="22.0" x2="666" y2="22.0" stroke="#E3E8EA" stroke-width="1" stroke-dasharray="2 3"/><text x="36" y="26.0" text-anchor="end" font-size="9.5" fill="#9AA6AC">40</text><rect x="53.8" y="152.7" width="32.1" height="3.4" rx="2" fill="#B8C6CB"/><text x="69.9" y="147.7" text-anchor="middle" font-size="10" font-weight="600" fill="#1F2933">1</text><text x="69.9" y="172" text-anchor="middle" font-size="9.5" fill="#6B7780">1 月</text><rect x="105.7" y="156.0" width="32.1" height="1.0" rx="2" fill="#B8C6CB"/><text x="121.8" y="151.0" text-anchor="middle" font-size="10" font-weight="600" fill="#1F2933">0</text><text x="121.8" y="172" text-anchor="middle" font-size="9.5" fill="#6B7780">2 月</text><rect x="157.5" y="152.7" width="32.1" height="3.4" rx="2" fill="#B8C6CB"/><text x="173.6" y="147.7" text-anchor="middle" font-size="10" font-weight="600" fill="#1F2933">1</text><text x="173.6" y="172" text-anchor="middle" font-size="9.5" fill="#6B7780">3 月</text><rect x="209.3" y="145.9" width="32.1" height="10.0" rx="2" fill="#B8C6CB"/><text x="225.4" y="140.9" text-anchor="middle" font-size="10" font-weight="600" fill="#1F2933">3</text><text x="225.4" y="172" text-anchor="middle" font-size="9.5" fill="#6B7780">4 月</text><rect x="261.2" y="142.6" width="32.1" height="13.4" rx="2" fill="#B8C6CB"/><text x="277.2" y="137.6" text-anchor="middle" font-size="10" font-weight="600" fill="#1F2933">4</text><text x="277.2" y="172" text-anchor="middle" font-size="9.5" fill="#6B7780">5 月</text><rect x="313.0" y="156.0" width="32.1" height="1.0" rx="2" fill="#B8C6CB"/><text x="329.1" y="151.0" text-anchor="middle" font-size="10" font-weight="600" fill="#1F2933">0</text><text x="329.1" y="172" text-anchor="middle" font-size="9.5" fill="#6B7780">6 月</text><rect x="364.8" y="129.2" width="32.1" height="26.8" rx="2" fill="#B8C6CB"/><text x="380.9" y="124.2" text-anchor="middle" font-size="10" font-weight="600" fill="#1F2933">8</text><text x="380.9" y="172" text-anchor="middle" font-size="9.5" fill="#6B7780">7 月</text><rect x="416.7" y="149.3" width="32.1" height="6.7" rx="2" fill="#B8C6CB"/><text x="432.8" y="144.3" text-anchor="middle" font-size="10" font-weight="600" fill="#1F2933">2</text><text x="432.8" y="172" text-anchor="middle" font-size="9.5" fill="#6B7780">8 月</text><rect x="468.5" y="142.6" width="32.1" height="13.4" rx="2" fill="#B8C6CB"/><text x="484.6" y="137.6" text-anchor="middle" font-size="10" font-weight="600" fill="#1F2933">4</text><text x="484.6" y="172" text-anchor="middle" font-size="9.5" fill="#6B7780">9 月</text><rect x="520.3" y="35.4" width="32.1" height="120.6" rx="2" fill="#0F4C5C"/><text x="536.4" y="30.4" text-anchor="middle" font-size="10" font-weight="600" fill="#1F2933">36</text><text x="536.4" y="172" text-anchor="middle" font-size="9.5" fill="#6B7780">10 月</text><rect x="572.2" y="152.7" width="32.1" height="3.4" rx="2" fill="#B8C6CB"/><text x="588.3" y="147.7" text-anchor="middle" font-size="10" font-weight="600" fill="#1F2933">1</text><text x="588.3" y="172" text-anchor="middle" font-size="9.5" fill="#6B7780">11 月</text><rect x="624.0" y="149.3" width="32.1" height="6.7" rx="2" fill="#B8C6CB"/><text x="640.1" y="144.3" text-anchor="middle" font-size="10" font-weight="600" fill="#1F2933">2</text><text x="640.1" y="172" text-anchor="middle" font-size="9.5" fill="#6B7780">12 月</text></svg>
+    <div class="insight"><b>这说明什么：</b>10 月 36 条（占 2026 年 58.1%），7 月 8 条次高；11 月仅 1 条、12 月 2 条。Q4 的 10 月是<b>新游集中验证期</b>，预约蓄水与素材测试必须前置。</div>
+  </div>
+  <div class="chart-card">
+    <div class="chart-head"><span class="chart-title">2026-10 单日开测分布：15 日、21 日、29 日形成小高峰</span><span class="chart-note">36 条记录 · 30 款游戏 · 同一游戏可有多条</span></div>
+    <svg class="chart" viewBox="0 0 680 212" xmlns="http://www.w3.org/2000/svg"><line x1="44" y1="150.0" x2="666" y2="150.0" stroke="#E3E8EA" stroke-width="1" stroke-dasharray="2 3"/><text x="36" y="154.0" text-anchor="end" font-size="9.5" fill="#9AA6AC">0</text><line x1="44" y1="86.0" x2="666" y2="86.0" stroke="#E3E8EA" stroke-width="1" stroke-dasharray="2 3"/><text x="36" y="90.0" text-anchor="end" font-size="9.5" fill="#9AA6AC">3</text><line x1="44" y1="22.0" x2="666" y2="22.0" stroke="#E3E8EA" stroke-width="1" stroke-dasharray="2 3"/><text x="36" y="26.0" text-anchor="end" font-size="9.5" fill="#9AA6AC">6</text><rect x="50.6" y="128.7" width="21.4" height="21.3" rx="2" fill="#B8C6CB"/><text x="61.3" y="123.7" text-anchor="middle" font-size="10" font-weight="600" fill="#1F2933">1</text><text x="61.3" y="162" transform="rotate(-45 61.3 162)" text-anchor="end" font-size="9" fill="#6B7780">10-01</text><rect x="85.1" y="128.7" width="21.4" height="21.3" rx="2" fill="#B8C6CB"/><text x="95.8" y="123.7" text-anchor="middle" font-size="10" font-weight="600" fill="#1F2933">1</text><text x="95.8" y="162" transform="rotate(-45 95.8 162)" text-anchor="end" font-size="9" fill="#6B7780">10-03</text><rect x="119.7" y="128.7" width="21.4" height="21.3" rx="2" fill="#B8C6CB"/><text x="130.4" y="123.7" text-anchor="middle" font-size="10" font-weight="600" fill="#1F2933">1</text><text x="130.4" y="162" transform="rotate(-45 130.4 162)" text-anchor="end" font-size="9" fill="#6B7780">10-08</text><rect x="154.2" y="128.7" width="21.4" height="21.3" rx="2" fill="#B8C6CB"/><text x="164.9" y="123.7" text-anchor="middle" font-size="10" font-weight="600" fill="#1F2933">1</text><text x="164.9" y="162" transform="rotate(-45 164.9 162)" text-anchor="end" font-size="9" fill="#6B7780">10-09</text><rect x="188.8" y="128.7" width="21.4" height="21.3" rx="2" fill="#B8C6CB"/><text x="199.5" y="123.7" text-anchor="middle" font-size="10" font-weight="600" fill="#1F2933">1</text><text x="199.5" y="162" transform="rotate(-45 199.5 162)" text-anchor="end" font-size="9" fill="#6B7780">10-10</text><rect x="223.3" y="128.7" width="21.4" height="21.3" rx="2" fill="#B8C6CB"/><text x="234.1" y="123.7" text-anchor="middle" font-size="10" font-weight="600" fill="#1F2933">1</text><text x="234.1" y="162" transform="rotate(-45 234.1 162)" text-anchor="end" font-size="9" fill="#6B7780">10-12</text><rect x="257.9" y="107.3" width="21.4" height="42.7" rx="2" fill="#B8C6CB"/><text x="268.6" y="102.3" text-anchor="middle" font-size="10" font-weight="600" fill="#1F2933">2</text><text x="268.6" y="162" transform="rotate(-45 268.6 162)" text-anchor="end" font-size="9" fill="#6B7780">10-13</text><rect x="292.5" y="107.3" width="21.4" height="42.7" rx="2" fill="#B8C6CB"/><text x="303.2" y="102.3" text-anchor="middle" font-size="10" font-weight="600" fill="#1F2933">2</text><text x="303.2" y="162" transform="rotate(-45 303.2 162)" text-anchor="end" font-size="9" fill="#6B7780">10-14</text><rect x="327.0" y="22.0" width="21.4" height="128.0" rx="2" fill="#0F4C5C"/><text x="337.7" y="17.0" text-anchor="middle" font-size="10" font-weight="600" fill="#1F2933">6</text><text x="337.7" y="162" transform="rotate(-45 337.7 162)" text-anchor="end" font-size="9" fill="#6B7780">10-15</text><rect x="361.6" y="107.3" width="21.4" height="42.7" rx="2" fill="#B8C6CB"/><text x="372.3" y="102.3" text-anchor="middle" font-size="10" font-weight="600" fill="#1F2933">2</text><text x="372.3" y="162" transform="rotate(-45 372.3 162)" text-anchor="end" font-size="9" fill="#6B7780">10-16</text><rect x="396.1" y="128.7" width="21.4" height="21.3" rx="2" fill="#B8C6CB"/><text x="406.8" y="123.7" text-anchor="middle" font-size="10" font-weight="600" fill="#1F2933">1</text><text x="406.8" y="162" transform="rotate(-45 406.8 162)" text-anchor="end" font-size="9" fill="#6B7780">10-17</text><rect x="430.7" y="107.3" width="21.4" height="42.7" rx="2" fill="#B8C6CB"/><text x="441.4" y="102.3" text-anchor="middle" font-size="10" font-weight="600" fill="#1F2933">2</text><text x="441.4" y="162" transform="rotate(-45 441.4 162)" text-anchor="end" font-size="9" fill="#6B7780">10-20</text><rect x="465.2" y="64.7" width="21.4" height="85.3" rx="2" fill="#0F4C5C"/><text x="475.9" y="59.7" text-anchor="middle" font-size="10" font-weight="600" fill="#1F2933">4</text><text x="475.9" y="162" transform="rotate(-45 475.9 162)" text-anchor="end" font-size="9" fill="#6B7780">10-21</text><rect x="499.8" y="86.0" width="21.4" height="64.0" rx="2" fill="#0F4C5C"/><text x="510.5" y="81.0" text-anchor="middle" font-size="10" font-weight="600" fill="#1F2933">3</text><text x="510.5" y="162" transform="rotate(-45 510.5 162)" text-anchor="end" font-size="9" fill="#6B7780">10-22</text><rect x="534.3" y="86.0" width="21.4" height="64.0" rx="2" fill="#0F4C5C"/><text x="545.1" y="81.0" text-anchor="middle" font-size="10" font-weight="600" fill="#1F2933">3</text><text x="545.1" y="162" transform="rotate(-45 545.1 162)" text-anchor="end" font-size="9" fill="#6B7780">10-23</text><rect x="568.9" y="128.7" width="21.4" height="21.3" rx="2" fill="#B8C6CB"/><text x="579.6" y="123.7" text-anchor="middle" font-size="10" font-weight="600" fill="#1F2933">1</text><text x="579.6" y="162" transform="rotate(-45 579.6 162)" text-anchor="end" font-size="9" fill="#6B7780">10-27</text><rect x="603.5" y="128.7" width="21.4" height="21.3" rx="2" fill="#B8C6CB"/><text x="614.2" y="123.7" text-anchor="middle" font-size="10" font-weight="600" fill="#1F2933">1</text><text x="614.2" y="162" transform="rotate(-45 614.2 162)" text-anchor="end" font-size="9" fill="#6B7780">10-28</text><rect x="638.0" y="86.0" width="21.4" height="64.0" rx="2" fill="#0F4C5C"/><text x="648.7" y="81.0" text-anchor="middle" font-size="10" font-weight="600" fill="#1F2933">3</text><text x="648.7" y="162" transform="rotate(-45 648.7 162)" text-anchor="end" font-size="9" fill="#6B7780">10-29</text></svg>
+    <div class="insight"><b>这说明什么：</b>10-15 单日 6 条、10-21 4 条、10-22/23/29 各 3 条。档期密集会推高买量成本与媒体注意力竞争；新游应<b>避开 10 月中下旬硬碰硬</b>，或提前 2–3 周做预约与素材预热。</div>
+  </div>
+  <div class="summary-strip">
+    <div class="cell"><div class="num">62</div><div class="txt">2026 年开测记录数</div></div>
+    <div class="cell"><div class="num">36</div><div class="txt">10 月记录数（全年峰值）</div></div>
+    <div class="cell"><div class="num">19</div><div class="txt">2025 及以前记录（长线测试样本）</div></div>
+  </div>
+  <div class="table-wrap" style="margin-top:4mm">
+    <table>
+      <thead><tr><th style="width:30mm">档期</th><th style="width:34mm">样本数据</th><th>对发行/运营的含义</th></tr></thead>
+      <tbody>
+        <tr><td><b>2026-10</b></td><td>36 条 / 30 款</td><td>全年峰值，10-15 单日 6 条；竞争最拥挤，预约蓄水与素材测试至少前置 2–3 周，尽量避开 10-15 / 21 / 29。</td></tr>
+        <tr><td><b>2026-07</b></td><td>8 条</td><td>样本内次高，暑期档验证窗口；测试期产品可在此抢量，但需与 10 月上线节奏错开。</td></tr>
+        <tr><td><b>2026-11/12</b></td><td>3 条（未来上线）</td><td>11-24、12-31×2；样本内相对稀疏，适合错峰上线与预约冲刺，但需确认竞品真实档期。</td></tr>
+        <tr><td><b>2025 及以前</b></td><td>19 条</td><td>长线测试/多轮调优；老产品重启要做版本级复盘，不能只看最新一条开测记录。</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="insight" style="margin-top:3mm"><b>口径提醒：</b>开测样本仅来自前 30 名详情，不是全市场开测日历；未来日期按“待上线”处理，实际档期可能调整。</div>
+  <div class="page-foot"><span>数据来源：gameres 新游榜（16p.com） · 537 条榜单 / 30 条详情</span><span>05 / 09</span></div>
+</div>
+
+
+<div class="page"><div class="page-head"><span>游戏运营实习作品集 · 新游榜单观察</span><span>gameres 新游榜 · 2026-11-02</span></div>
+  <div class="kicker">05 / TOP 30 SNAPSHOT</div>
+  <h2>前 30 名速览：上线与测试混合的榜单</h2>
+  <p class="lead">前 30 中 19 款已上线、3 款待上线、1 款已公测、7 款仍在测试。榜单同时承载“上线后表现”和“测试期热度”，竞品跟踪必须分组。</p>
+  <div class="table-wrap">
+    <table class="top30-table">
+      <thead><tr><th class="num" style="width:8mm">排名</th><th>游戏</th><th style="width:18mm">品类</th><th class="num" style="width:11mm">评分</th><th style="width:40mm">开发商</th><th style="width:32mm">发行商</th><th style="width:28mm">开测状态</th></tr></thead>
+      <tbody><tr><td class="rank">1</td><td class="game">影之刃零</td><td>动作</td><td class="num">4.5</td><td class="dev" title="灵游坊；S-GAME Studio">灵游坊 等2家</td><td class="pub" title="S-GAME Publishing；灵游坊">S-GAME Publishing 等2家</td><td><span class="tag">已上线</span> <span class="tiny">10-29</span></td></tr>
+<tr><td class="rank">2</td><td class="game">地城狩猎</td><td>角色扮演</td><td class="num">4.8</td><td class="dev" title="Shanghai Epieplay Technology Co., Ltd">Shanghai Epieplay Technology Co., Ltd</td><td class="pub" title="9377手游">9377手游</td><td><span class="tag">已上线</span> <span class="tiny">10-12</span></td></tr>
+<tr><td class="rank">3</td><td class="game">俱乐大玩家</td><td>休闲</td><td class="num">4.0</td><td class="dev" title="乐游坊工作室；Hainan Dragon Egg Technology Co., Ltd.">乐游坊工作室 等2家</td><td class="pub" title="海南临游科技有限公司">海南临游科技有限公司</td><td><span class="tag">已上线</span> <span class="tiny">10-29</span></td></tr>
+<tr><td class="rank">4</td><td class="game">篮球少女:飞跃巅峰</td><td>策略</td><td class="num">4.5</td><td class="dev" title="Lingxi Games Inc.；黑曼波工作室">Lingxi Games Inc. 等2家</td><td class="pub" title="广州灵犀互动娱乐有限公司">广州灵犀互动娱乐有限公司</td><td><span class="tag">已上线</span> <span class="tiny">10-21</span></td></tr>
+<tr><td class="rank">5</td><td class="game">伍六七:暗影交锋</td><td>动作</td><td class="num">4.6</td><td class="dev" title="啊吉游">啊吉游</td><td class="pub" title="页面未提供">页面未提供</td><td><span class="tag">待上线</span> <span class="tiny">12-31</span></td></tr>
+<tr><td class="rank">6</td><td class="game">星途天城</td><td>卡牌</td><td class="num">4.5</td><td class="dev" title="Guangzhou Mengqu Information Technology Co., Ltd.；广州春芒网络科技有限公司">Guangzhou Mengqu Information Technology Co., Ltd. 等2家</td><td class="pub" title="页面未提供">页面未提供</td><td><span class="tag">已上线</span> <span class="tiny">10-22</span></td></tr>
+<tr><td class="rank">7</td><td class="game">饥困荒野</td><td>沙盒</td><td class="num">3.7</td><td class="dev" title="深圳市腾讯计算机系统有限公司；猪人工作室；腾讯">深圳市腾讯计算机系统有限公司 等3家</td><td class="pub" title="腾讯">腾讯</td><td><span class="tag">待上线</span> <span class="tiny">11-24</span></td></tr>
+<tr><td class="rank">8</td><td class="game">问剑长生</td><td>放置</td><td class="num">3.7</td><td class="dev" title="页面未提供">页面未提供</td><td class="pub" title="雷霆游戏">雷霆游戏</td><td><span class="tag">已上线</span> <span class="tiny">10-16</span></td></tr>
+<tr><td class="rank">9</td><td class="game">绿梦:时空之声</td><td>二次元</td><td class="num">3.0</td><td class="dev" title="绿梦工作室">绿梦工作室</td><td class="pub" title="上海竹子互联网信息服务有限公司；绿梦工作室">上海竹子互联网信息服务有限公司 等2家</td><td><span class="tag">已上线</span> <span class="tiny">10-15</span></td></tr>
+<tr><td class="rank">10</td><td class="game">崩坏：因缘精灵</td><td>自走棋</td><td class="num">4.2</td><td class="dev" title="上海米哈游网络科技股份有限公司；米哈游®">上海米哈游网络科技股份有限公司 等2家</td><td class="pub" title="页面未提供">页面未提供</td><td><span class="tag">测试中</span> <span class="tiny">10-03</span></td></tr>
+<tr><td class="rank">11</td><td class="game">神泣：纷争</td><td>动作</td><td class="num">4.7</td><td class="dev" title="三九互娱；Zhejiang UmarkNetwork Technology Co.,Ltd">三九互娱 等2家</td><td class="pub" title="页面未提供">页面未提供</td><td><span class="tag">已公测</span> <span class="tiny">10-22</span></td></tr>
+<tr><td class="rank">12</td><td class="game">失落城堡2</td><td>Roguelike</td><td class="num">3.8</td><td class="dev" title="Xiamen Leiting Network Technology Co., Ltd.；雷霆游戏；Hunter Studio">Xiamen Leiting Network Technology Co., Ltd. 等3家</td><td class="pub" title="雷霆游戏">雷霆游戏</td><td><span class="tag">已上线</span> <span class="tiny">10-22</span></td></tr>
+<tr><td class="rank">13</td><td class="game">弈仙牌</td><td>自走棋</td><td class="num">4.1</td><td class="dev" title="Gamirror Games；墨日工作室">Gamirror Games 等2家</td><td class="pub" title="墨日工作室；Gamirror Games">墨日工作室 等2家</td><td><span class="tag">已上线</span> <span class="tiny">10-15</span></td></tr>
+<tr><td class="rank">14</td><td class="game">七界梦谭</td><td>开放世界</td><td class="num">4.5</td><td class="dev" title="飞光阁工作室">飞光阁工作室</td><td class="pub" title="飞光阁工作室">飞光阁工作室</td><td><span class="tag">待上线</span> <span class="tiny">12-31</span></td></tr>
+<tr><td class="rank">15</td><td class="game">秩序:新曙光</td><td>建造</td><td class="num">4.2</td><td class="dev" title="Outer Space Workshop；外层空间工作室">Outer Space Workshop 等2家</td><td class="pub" title="页面未提供">页面未提供</td><td><span class="tag">已上线</span> <span class="tiny">10-14</span></td></tr>
+<tr><td class="rank">16</td><td class="game">柚松屋</td><td>休闲</td><td class="num">4.8</td><td class="dev" title="青图工作室">青图工作室</td><td class="pub" title="页面未提供">页面未提供</td><td><span class="tag">已上线</span> <span class="tiny">10-29</span></td></tr>
+<tr><td class="rank">17</td><td class="game">我叫MT:崛起</td><td>角色扮演</td><td class="num">4.1</td><td class="dev" title="Shanghai Epieplay Technology Co., Ltd；兔飞梦鲸工作室">Shanghai Epieplay Technology Co., Ltd 等2家</td><td class="pub" title="海南祺曜互动">海南祺曜互动</td><td><span class="tag">已上线</span> <span class="tiny">10-13</span></td></tr>
+<tr><td class="rank">18</td><td class="game">对峙:交锋时刻</td><td>射击</td><td class="num">4.3</td><td class="dev" title="Axlebolt">Axlebolt</td><td class="pub" title="梧桐">梧桐</td><td><span class="tag">测试中</span> <span class="tiny">10-16</span></td></tr>
+<tr><td class="rank">19</td><td class="game">本茶纲目</td><td>国风</td><td class="num">4.0</td><td class="dev" title="羲和山海">羲和山海</td><td class="pub" title="页面未提供">页面未提供</td><td><span class="tag">测试中</span> <span class="tiny">10-28</span></td></tr>
+<tr><td class="rank">20</td><td class="game">霓虹深渊2</td><td>Roguelike</td><td class="num">3.4</td><td class="dev" title="Veewo Games">Veewo Games</td><td class="pub" title="Veewo Games；Veewo Games,Kepler Ghost">Veewo Games 等2家</td><td><span class="tag">已上线</span> <span class="tiny">10-08</span></td></tr>
+<tr><td class="rank">21</td><td class="game">奶茶店模拟器</td><td>休闲</td><td class="num">4.2</td><td class="dev" title="财可咪工作室；Caikemi">财可咪工作室 等2家</td><td class="pub" title="Erabit Studios；Caikemi">Erabit Studios 等2家</td><td><span class="tag">测试中</span> <span class="tiny">10-23</span></td></tr>
+<tr><td class="rank">22</td><td class="game">拳皇</td><td>格斗</td><td class="num">3.1</td><td class="dev" title="HOOLAI GAME LIMITED；Wanda Game">HOOLAI GAME LIMITED 等2家</td><td class="pub" title="Wanda Game；互爱互动（北京）科技有限公司">Wanda Game 等2家</td><td><span class="tag">已上线</span> <span class="tiny">10-21</span></td></tr>
+<tr><td class="rank">23</td><td class="game">喵骑战域</td><td>休闲</td><td class="num">4.5</td><td class="dev" title="EasyGame Limited">EasyGame Limited</td><td class="pub" title="页面未提供">页面未提供</td><td><span class="tag">已上线</span> <span class="tiny">10-20</span></td></tr>
+<tr><td class="rank">24</td><td class="game">希望之启航:哈比兔喊你归队了</td><td>角色扮演</td><td class="num">4.8</td><td class="dev" title="Shanghai Epieplay Technology Co., Ltd">Shanghai Epieplay Technology Co., Ltd</td><td class="pub" title="页面未提供">页面未提供</td><td><span class="tag">已上线</span> <span class="tiny">10-21</span></td></tr>
+<tr><td class="rank">25</td><td class="game">剑侠世界4:无限</td><td>武侠</td><td class="num">3.1</td><td class="dev" title="Chengdu Seasun Shiyou Technology Co., Ltd；西山居游戏">Chengdu Seasun Shiyou Technology Co., Ltd 等2家</td><td class="pub" title="海南西山居娱乐互动科技有限公司">海南西山居娱乐互动科技有限公司</td><td><span class="tag">已上线</span> <span class="tiny">10-15</span></td></tr>
+<tr><td class="rank">26</td><td class="game">尼罗河勇士2</td><td>Roguelike</td><td class="num">4.4</td><td class="dev" title="Stove Studio">Stove Studio</td><td class="pub" title="Gamirror Games；圣灯工作室">Gamirror Games 等2家</td><td><span class="tag">测试中</span> <span class="tiny">10-23</span></td></tr>
+<tr><td class="rank">27</td><td class="game">绿梦:时空之声</td><td>二次元</td><td class="num">2.9</td><td class="dev" title="Shanghai Epieplay Technology Co., Ltd；绿梦工作室">Shanghai Epieplay Technology Co., Ltd 等2家</td><td class="pub" title="页面未提供">页面未提供</td><td><span class="tag">已上线</span> <span class="tiny">10-15</span></td></tr>
+<tr><td class="rank">28</td><td class="game">修仙王朝模拟器</td><td>模拟</td><td class="num">4.0</td><td class="dev" title="SKY工作室">SKY工作室</td><td class="pub" title="页面未提供">页面未提供</td><td><span class="tag">已上线</span> <span class="tiny">10-17</span></td></tr>
+<tr><td class="rank">29</td><td class="game">星际理想国</td><td>沙盒</td><td class="num">4.5</td><td class="dev" title="北京像素软件科技股份有限公司">北京像素软件科技股份有限公司</td><td class="pub" title="深圳市腾讯计算机系统有限公司；腾讯">深圳市腾讯计算机系统有限公司 等2家</td><td><span class="tag">测试中</span> <span class="tiny">10-23</span></td></tr>
+<tr><td class="rank">30</td><td class="game">淡墨水云乡</td><td>模拟经营</td><td class="num">4.2</td><td class="dev" title="水云乡工作室；完美世界游戏">水云乡工作室 等2家</td><td class="pub" title="完美世界游戏">完美世界游戏</td><td><span class="tag">测试中</span> <span class="tiny">10-15</span></td></tr></tbody>
+    </table>
+  </div>
+  <div class="insight" style="margin-top:3mm"><b>读表提示：</b>“评分”为榜单 5 分制；“开测状态”按最新一条开测记录判断，日期为月-日。开发商/发行商取接口 company_role 1/2，多主体显示首个 + 家数；长英文名与超长字段在表格中省略，完整信息见各自 txt。</div>
+  <div class="page-foot"><span>数据来源：gameres 新游榜（16p.com） · 537 条榜单 / 30 条详情</span><span>06 / 09</span></div>
+</div>
+
+
+<div class="page"><div class="page-head"><span>游戏运营实习作品集 · 新游榜单观察</span><span>gameres 新游榜 · 2026-11-02</span></div>
+  <div class="kicker">06 / CASE A · MULTI-PLATFORM</div>
+  <div class="case-hero">
+    <div>
+      <div class="case-title">地城狩猎</div>
+      <div class="case-sub">排名 #2 · 角色扮演 · 开发商 Shanghai Epieplay Technology Co., Ltd · 发行商 9377手游</div>
+      <div class="case-note">选例理由：同时覆盖 iOS、TapTap、3839 三个平台，且有 3 条开测记录，适合观察“多平台声量结构”。</div>
+    </div>
+    <div class="case-score">
+      <div class="mini"><div class="v">4.8<span style="font-size:8px;color:#6B7780"> /5</span></div><div class="l">榜单评分</div></div>
+      <div class="mini"><div class="v">9.7<span style="font-size:8px;color:#6B7780"> /10</span></div><div class="l">详情评分</div></div>
+      <div class="mini"><div class="v">26,000</div><div class="l">榜单评价数</div></div>
+      <div class="mini"><div class="v">3</div><div class="l">平台数</div></div>
+    </div>
+  </div>
+  <div class="case-grid">
+    <div class="case-block">
+      <h3>卖点：Q 版暗黑 Like + 低门槛刷宝</h3>
+      <ul>
+        <li><b>品类杂交：</b>保留暗黑 Like 的天赋、技能、词缀深度，用 Q 版画风降低理解门槛。</li>
+        <li><b>爽感优先：</b>“一刀清屏”的割草反馈，配合章节式关卡与秘境/Boss 收束，适合短视频素材表达。</li>
+        <li><b>Build 深度：</b>技能流派、铭文、转职、天赐神选构成多层策略，兼顾硬核与轻度。</li>
+        <li><b>低切换成本：</b>详情简介提到 100% 资源返还、5 分钟一局，直接降低新用户尝试与流派切换成本。</li>
+      </ul>
+    </div>
+    <div class="case-block">
+      <h3>目标用户（基于简介与标签推断）</h3>
+      <ul>
+        <li><b>暗黑 Like / 刷宝核心：</b>研究 BD、词缀、伤害机制，追求毕业装与极限配装。</li>
+        <li><b>碎片时间轻度：</b>一键刷图、5 分钟一局，不需要长时间在线。</li>
+        <li><b>数值成长型：</b>关注战力数字与进度奖励，愿意为“金光一闪”的即时反馈付费。</li>
+        <li class="tiny">以上为运营推断，不是官方用户画像；需用测试期问卷/评论验证。</li>
+      </ul>
+    </div>
+    <div class="case-block">
+      <h3>平台与素材面（可获取部分）</h3>
+      <table class="platform-table">
+        <thead><tr><th>平台</th><th>评分 / 评价</th><th>版本 / 包体</th></tr></thead>
+        <tbody>
+          <tr><td>iOS App Store</td><td>4.9/5 · 24,979 条</td><td>1.0.4 / 包体未提供</td></tr>
+          <tr><td>TapTap</td><td>8.4/10 · 548 条</td><td>版本未提供 / 包体未提供</td></tr>
+          <tr><td>3839 / 好游快爆</td><td>暂无评分（0 条）</td><td>—</td></tr>
+        </tbody>
+      </table>
+      <div class="case-note">商店页截图：详情页 5 张、TapTap 5 张、App Store 1 张（接口返回）。<b>未采集广告素材、投放量与买量成本</b>，因此不对素材效率下结论；建议补 DataEye/AppGrowing 素材库做 AB 测试。</div>
+    </div>
+    <div class="case-block">
+      <h3>可优化建议</h3>
+      <ul>
+        <li><b>把 iOS 口碑外溢到安卓：</b>App Store 4.9 分 / 24,979 条评价，是最强信任背书；TapTap 仅 548 条，建议在 TapTap/3839 商店页前置高分与评价量。</li>
+        <li><b>补齐安卓评价密度：</b>上线首周做评价引导与社区活动，把 TapTap 评价从“几百”拉到“上千”，提升商店排序与转化。</li>
+        <li><b>素材分层：</b>硬核向讲 BD/铭文/天赐神选，泛用户向讲 5 分钟一局/一键刷图/100% 返还；按渠道分别投放。</li>
+        <li><b>节点复盘：</b>2026-08-15 限量删档计费 → 08-31 上线 → 10-12 上线，建议对比三个节点的留存、付费与差评关键词（需补评论原文）。</li>
+      </ul>
+    </div>
+    <div class="case-block full">
+      <h3>如果接手发行运营：首月看什么</h3>
+      <table class="platform-table">
+        <thead><tr><th style="width:22mm">阶段</th><th>建议动作</th><th style="width:56mm">可观察指标</th></tr></thead>
+        <tbody>
+          <tr><td>上线前</td><td>把 App Store 4.9 分 / 24,979 条评价前置到 TapTap/3839；按“硬核 BD / 碎片刷宝”做两套素材。</td><td>商店页转化率、预约量、素材 CTR（需渠道后台）</td></tr>
+          <tr><td>首周</td><td>评价引导 + 社区活动，补齐 TapTap 评价密度；对比 08-15 / 08-31 / 10-12 三个节点。</td><td>新增、次日留存、7 日留存、评分与差评关键词</td></tr>
+          <tr><td>首月</td><td>按流派/付费档位分层运营；用 100% 返还卖点做回流。</td><td>付费率、ARPPU、回流率、LTV（需内部数据）</td></tr>
+        </tbody>
+      </table>
+      <div class="case-note">指标为建议监控项；本次未采集内部留存/付费数据，不能替代真实测试结论。</div>
+    </div>
+  </div>
+  <div class="page-foot"><span>数据来源：gameres 新游榜（16p.com） · 537 条榜单 / 30 条详情</span><span>07 / 09</span></div>
+</div>
+
+
+<div class="page"><div class="page-head"><span>游戏运营实习作品集 · 新游榜单观察</span><span>gameres 新游榜 · 2026-11-02</span></div>
+  <div class="kicker">06 / CASE B · TEST CYCLE</div>
+  <div class="case-hero">
+    <div>
+      <div class="case-title">饥困荒野</div>
+      <div class="case-sub">排名 #7 · 沙盒 · 开发商 深圳市腾讯计算机系统有限公司 等3家 · 发行商 腾讯</div>
+      <div class="case-note">选例理由：30 款中开测记录最多（7 条，跨 2023–2026），且背靠腾讯与 Klei 正版授权，适合观察“长线测试期运营”。</div>
+    </div>
+    <div class="case-score">
+      <div class="mini"><div class="v">3.7<span style="font-size:8px;color:#6B7780"> /5</span></div><div class="l">榜单评分</div></div>
+      <div class="mini"><div class="v">7.4<span style="font-size:8px;color:#6B7780"> /10</span></div><div class="l">详情评分</div></div>
+      <div class="mini"><div class="v">12,000</div><div class="l">榜单评价数</div></div>
+      <div class="mini"><div class="v">7</div><div class="l">开测记录</div></div>
+    </div>
+  </div>
+  <div class="case-grid">
+    <div class="case-block">
+      <h3>卖点：正版 IP + 沙盒生存 + 多人联机</h3>
+      <ul>
+        <li><b>IP 信任：</b>Klei 正版授权，以《饥荒：联机版》为基础开发，降低 IP 用户的识别与尝试成本。</li>
+        <li><b>玩法还原：</b>探索、收集、制作、战斗、四季轮转，端游玩法复刻到移动端。</li>
+        <li><b>社交裂变：</b>多人联机、篝火守夜、组队生存，天然适合好友拉新与直播/短视频内容。</li>
+        <li><b>美术差异：</b>哥特微恐 + 荒诞世界，和主流清新沙盒形成视觉区隔。</li>
+      </ul>
+    </div>
+    <div class="case-block">
+      <h3>目标用户（基于简介与标签推断）</h3>
+      <ul>
+        <li><b>饥荒 IP / PC 沙盒生存用户：</b>有端游经验，关注玩法还原与内容更新。</li>
+        <li><b>多人联机社交型：</b>愿意拉好友开黑，重视联机稳定性与互助玩法。</li>
+        <li><b>建造/经营休闲型：</b>喜欢家园布置、耕种烹饪，不追求高强度战斗。</li>
+        <li><b>哥特暗黑美术偏好者：</b>被微恐、荒诞、手绘质感吸引。</li>
+        <li class="tiny">以上为运营推断，需用测试期评论与用户分层数据验证。</li>
+      </ul>
+    </div>
+    <div class="case-block">
+      <h3>平台与素材面（可获取部分）</h3>
+      <table class="platform-table">
+        <thead><tr><th>平台</th><th>评分 / 评价</th><th>版本 / 包体</th></tr></thead>
+        <tbody>
+          <tr><td>TapTap</td><td>7.5/10 · 7,134 条</td><td>版本未提供 / 包体未提供</td></tr>
+          <tr><td>3839 / 好游快爆</td><td>7.2/10 · 5,146 条</td><td>—</td></tr>
+          <tr><td>iOS / Steam</td><td>接口未返回</td><td>—</td></tr>
+        </tbody>
+      </table>
+      <div class="case-note">商店页截图：详情页 5 张、TapTap 6 张（接口返回）。<b>未采集广告素材与买量数据</b>；正版 IP 是天然素材钩子，但素材效率需用投放数据验证。</div>
+    </div>
+    <div class="case-block">
+      <h3>可优化建议</h3>
+      <ul>
+        <li><b>先修口碑，再谈放量：</b>榜单 3.7/5、详情 7.4/10，低于前 30 均值 4.10；11-24 上线前应优先处理测试期高频负反馈。</li>
+        <li><b>把长测资产沉淀成台账：</b>7 条记录跨 2023–2026，建议按“版本-测试类型-评分/评价-反馈关键词”建表，复用预约用户。</li>
+        <li><b>IP 素材前置：</b>素材首屏明确“Klei 正版授权”，把 IP 识别成本降到最低；再分层打“联机/建造/微恐”人群。</li>
+        <li><b>档期错峰：</b>11-24 临近 10 月密集档期，预约与素材预热应提前，避开 10 月中下旬的买量高峰。</li>
+      </ul>
+    </div>
+    <div class="case-block full">
+      <h3>开测轨迹（接口记录）</h3>
+      <div class="small" style="color:#3E4C55">2023-12-27 删档计费测试 → 2024-02-29 上线 → 2024-03-24 上线 → 2025-06-05 限量删档焕新测试 → 2026-05-14 限量删档测试 → 2026-10-27 限量删档 → 2026-11-24 上线</div>
+      <div class="case-note">注：2026-11-24 为未来日期，按“待上线”处理；2024 年已有“上线”记录，后续仍有 2025/2026 限量删档测试，说明产品经历多轮调优/重启，不能只看最新一条。</div>
+    </div>
+    <div class="case-block full">
+      <h3>长线测试期复盘框架（按接口记录）</h3>
+      <table class="platform-table">
+        <thead><tr><th style="width:30mm">阶段</th><th style="width:62mm">版本节点</th><th>重点看什么</th></tr></thead>
+        <tbody>
+          <tr><td>首次测试</td><td>2023-12-27 删档计费测试</td><td>核心玩法接受度、付费意愿、BUG/性能</td></tr>
+          <tr><td>上线验证</td><td>2024-02-29 / 2024-03-24 上线</td><td>新增与留存、渠道 ROI、IP 用户转化</td></tr>
+          <tr><td>焕新测试</td><td>2025-06-05 限量删档焕新测试</td><td>版本迭代接受度、老用户回流</td></tr>
+          <tr><td>重启测试</td><td>2026-05-14 / 2026-10-27 限量删档</td><td>预约转化、口碑修复、买量素材</td></tr>
+          <tr><td>再次上线</td><td>2026-11-24 上线（未来）</td><td>首日/7 日留存、付费、差评关键词</td></tr>
+        </tbody>
+      </table>
+      <div class="case-note">框架为建议监控项；本次未采集内部留存/付费/评论原文，不能替代真实测试结论。</div>
+    </div>
+  </div>
+  <div class="page-foot"><span>数据来源：gameres 新游榜（16p.com） · 537 条榜单 / 30 条详情</span><span>08 / 09</span></div>
+</div>
+
+
+<div class="page"><div class="page-head"><span>游戏运营实习作品集 · 新游榜单观察</span><span>gameres 新游榜 · 2026-11-02</span></div>
+  <div class="kicker">07 / CONCLUSIONS &amp; TOOLKIT</div>
+  <h2>五条可执行的运营判断</h2>
+  <p class="lead">每条判断都对应正文中的图表或数据；不做“正确的废话”，只写能落到立项、竞品跟踪、测试期运营的动作。</p>
+  <div class="conclusion"><div class="n">01</div><div><div class="t">立项：避开“模拟/休闲”纯大类，转向复合题材</div><div class="d">模拟 33.1% + 休闲 22.9%，合计 56.0%；前四类占 74.5%。建议评估“模拟+细分”“IP+沙盒”“暗黑 Like+Q 版”等复合定位，用差异化降低同质化买量成本。</div></div><div class="src">图：品类占比<br>图：标签词频</div></div>
+  <div class="conclusion"><div class="n">02</div><div><div class="t">竞品：用“评分 × 评价数 × 平台声量”三维跟踪</div><div class="d">Top10 评价数占 61.8%，头部口碑集中；评分 4 分以上占 85.7%，单看评分会失真。建议周度记录评价增速、平台评分变化与差评关键词，而不是只看排名。</div></div><div class="src">图：评价数 Top10<br>图：评分分布</div></div>
+  <div class="conclusion"><div class="n">03</div><div><div class="t">发行：把中长尾研发团队当成合作供给池</div><div class="d">CR5 仅 7.6%、CR10 11.4%，Top1 工作室仅 13 款；85.8% 记录无发行商字段。市场高度分散，发行/运营服务与 BD 撮合有空间；但发行判断不能只依赖该字段。</div></div><div class="src">图：开发商集中度<br>图：发行商覆盖率</div></div>
+  <div class="conclusion"><div class="n">04</div><div><div class="t">档期：10 月是拥挤窗口，预约与素材要前置</div><div class="d">2026 年 10 月 36 条开测记录，占全年 58.1%；10-15 单日 6 条。新游应避开 10 月中下旬硬碰硬，至少提前 2–3 周做预约蓄水与素材测试。</div></div><div class="src">图：月度开测<br>图：10 月单日分布</div></div>
+  <div class="conclusion"><div class="n">05</div><div><div class="t">测试期：建立“测试-反馈-调优-上线”闭环</div><div class="d">30 款共 81 条开测记录，《饥困荒野》7 条跨 2023–2026。测试期是长线调优主战场；建议补齐评论原文、客服工单与买量素材，做版本级复盘。</div></div><div class="src">图：开测节奏<br>案例 B</div></div>
+
+  <div style="height:6mm"></div>
+  <div class="kicker">08 / DATA &amp; TOOLKIT</div>
+  <h2 style="font-size:18px">数据与工具说明</h2>
+  <div class="tool-grid">
+    <div class="panel">
+      <div class="panel-title">采集与清洗</div>
+      <ul class="tight small">
+        <li><b>采集：</b>Python + requests；榜单接口分页 11 页（每页 50 条），详情接口 30 次；请求间隔约 1.5 秒，失败重试 4 次。</li>
+        <li><b>清洗：</b>openpyxl 生成 Excel；评价数“万/亿”转数值；0 分标记为暂无评分；标签拆分后做品类优先匹配。</li>
+        <li><b>厂商：</b>按 `company_role_id` 区分 1=开发/研发、2=发行；多主体用“；”连接，缺失统一标“页面未提供”。</li>
+        <li><b>绘图：</b>手写内联 SVG，无 CDN、无外部图片、无第三方图表库；单文件双击可开，支持 A4 打印。</li>
+      </ul>
+    </div>
+    <div class="panel">
+      <div class="panel-title">本次未做的维度（数据缺失）</div>
+      <ul class="tight small limit-list">
+        <li><b>包体/版本对比：</b>TapTap 26 款全部无包体/版本；iOS 12 款仅 2 款有包体，样本不足，未做图表。</li>
+        <li><b>广告素材/买量：</b>接口不含投放素材、消耗、曝光、CTR，未做素材效率判断。</li>
+        <li><b>评论原文/情感：</b>未采集评论正文，仅用评价数做声量代理。</li>
+        <li><b>发行商集中度：</b>85.8% 记录无发行商字段，无法可靠计算。</li>
+        <li><b>全市场：</b>仅单站 30 天国内榜 537 款，不代表全市场；开测仅前 30，非完整开测日历。</li>
+      </ul>
+    </div>
+  </div>
+  <div class="insight" style="margin-top:4mm"><b>下一步补数清单：</b>① App Store/TapTap 评论原文 + 评分时间序列；② DataEye/AppGrowing 素材与投放量；③ 版号/工商信息补发行商；④ 测试期留存、付费、渠道 ROI（如有内部权限）。这四项补齐后，可把本报告从“榜单观察”升级为“竞品与测试期运营复盘”。</div>
+  <div class="page-foot"><span>数据来源：gameres 新游榜（16p.com） · 537 条榜单 / 30 条详情</span><span>09 / 09</span></div>
+</div>
+
+</body>
+</html>
